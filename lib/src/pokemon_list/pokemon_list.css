@@ -1,0 +1,11 @@
+.block{
+    /* width: 12% !important;
+    max-width: 12% !important; */
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 20px;
+}
+
+.block:hover{
+    background-color: rgba(0, 0, 0, 0.2);
+}
