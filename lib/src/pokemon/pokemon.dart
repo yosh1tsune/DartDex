@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html';
+import 'dart:html' hide Location;
 import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
@@ -25,9 +25,12 @@ class PokemonComponent{
   Map details = Map();
   List abilities = List();
   Map sprites = Map();
+  String species = '';
   List types = List();
   Map type1 = Map();
   Map type2 = Map();
+  List evolution_chain = List();
+  List family = List();
   
   PokemonComponent(this._location){
     getDetails();
@@ -38,9 +41,19 @@ class PokemonComponent{
     details = json.decode(request.responseText);
     abilities = json.decode(request.responseText)['abilities'];
     sprites = json.decode(request.responseText)['sprites'];
+    species = json.decode(request.responseText)['species']['url'];
     types = json.decode(request.responseText)['types'];
     type1 = types[0]['type'];
     if(types.length > 1) type2 = types[1]['type'];
+
+    HttpRequest request1 = await HttpRequest.request('$species', method: 'GET');
+    String evolution = json.decode(request1.responseText)['evolution_chain']['url'];
+    HttpRequest request2 = await HttpRequest.request('$evolution', method: 'GET');
+    evolution_chain = json.decode(request2.responseText)['chain']['evolves_to'];
+    
+    for(int i; i < evolution_chain.length; i++){
+      family.add(evolution_chain['']);
+    }
 
     setCurrentClasses();
   }

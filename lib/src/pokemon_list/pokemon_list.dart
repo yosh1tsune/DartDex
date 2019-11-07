@@ -47,8 +47,8 @@ class ListComponent{
     getData();
   }
 
-  getDetails(int id){
-    window.sessionStorage['id'] = id.toString();
+  getDetails(String id){
+    window.sessionStorage['id'] = id;
   }
 
   String PokeUrl() => RoutePaths.pokemon.toUrl();
