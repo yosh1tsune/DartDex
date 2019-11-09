@@ -4,6 +4,8 @@ import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
 
+import '../pokemon_list/data.dart' as list;
+
 import '../route_paths.dart';
 
 @Component(
@@ -29,9 +31,10 @@ class PokemonComponent{
   List types = List();
   Map type1 = Map();
   Map type2 = Map();
-  List evolution_chain = List();
+  Map evolution_chain = Map();
   List family = List();
-  
+  List poke = list.poke;
+
   PokemonComponent(this._location){
     getDetails();
   }
@@ -49,14 +52,52 @@ class PokemonComponent{
     HttpRequest request1 = await HttpRequest.request('$species', method: 'GET');
     String evolution = json.decode(request1.responseText)['evolution_chain']['url'];
     HttpRequest request2 = await HttpRequest.request('$evolution', method: 'GET');
-    evolution_chain = json.decode(request2.responseText)['chain']['evolves_to'];
+    evolution_chain = json.decode(request2.responseText);
     
-    for(int i; i < evolution_chain.length; i++){
-      family.add(evolution_chain['']);
-    }
+    if(evolution_chain['chain'].isNotEmpty){
+      if(evolution_chain['id'] == 67){
+        family.add({'name': evolution_chain['chain']['species']['name']});
+        evolution_chain['chain']['evolves_to'].forEach((f){
+          family.add({'name': f['species']['name']});
+        });
 
+        family.forEach((f){
+          poke.forEach((l){
+            if (f['name'] == l['name']){
+              f.addAll({'number': l['number']});
+              f.addAll({'image': l['image']});
+            }
+          });
+        });
+      }else{
+        if(evolution_chain['chain']['evolves_to'].isNotEmpty){
+          poke.forEach((l){
+            if (evolution_chain['chain']['species']['name'] == l['name']){
+              family.add({'number': l['number'], 'name': l['name'], 'image': l['image']});
+            }
+          });
+          poke.forEach((l){
+            if (evolution_chain['chain']['evolves_to'][0]['species']['name'] == l['name']){
+              print('lul');
+              family.add({'number': l['number'], 'name': l['name'], 'image': l['image']});
+            }
+          });
+          if(evolution_chain['chain']['evolves_to'][0]['evolves_to'].isNotEmpty){
+            poke.forEach((l){
+              if (evolution_chain['chain']['evolves_to'][0]['evolves_to'][0]['species']['name'] == l['name']){
+                family.add({'number': l['number'], 'name': l['name'], 'image': l['image']});
+              }
+            });
+          }
+        }
+      }
+    }
     setCurrentClasses();
   }
+
+  getPoke(String id) => window.sessionStorage['id'] = id;
+  
+  String PokeUrl() => RoutePaths.pokemon.toUrl();
 
   Map<String, bool> classes = <String, bool>{};
   Map<String, bool> classes2 = <String, bool>{};
