@@ -5,6 +5,7 @@ const idParam = 'id';
 class RoutePaths {
   static final pokemon = RoutePath(path: 'pokemon');
   static final pokemon_list = RoutePath(path: 'pokemon_list');
+  static final favorites = RoutePath(path: 'favorites');
 
 }
 

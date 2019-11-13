@@ -5,14 +5,14 @@ import 'package:angular/core.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/angular_components.dart';
 
-import 'data.dart' as list;
+import '../pokemon_list/data.dart' as list;
 
 import '../route_paths.dart';
 
 @Component(
-  selector: 'pokemon_list',
-  templateUrl: 'pokemon_list.html',
-  styleUrls: ['pokemon_list.css'],
+  selector: 'favorites',
+  templateUrl: 'favorites.html',
+  styleUrls: ['favorites.css'],
   directives: [ 
     coreDirectives, 
     routerDirectives, 
@@ -26,8 +26,9 @@ import '../route_paths.dart';
 )
 
 class ListComponent{
-  get fav => window.localStorage['fav'] == null? '' : window.localStorage['fav'];
+  List fav = json.decode(window.localStorage['fav']);
   List poke = list.poke;
+  List favorites = List();
   List all_types = List();
   List type = List();
   List regions = List();
@@ -41,6 +42,11 @@ class ListComponent{
     all_types = json.decode(request2.responseText)['results'];
     regions = json.decode(request3.responseText)['results'];
     
+    poke.forEach((f){
+      if (fav.contains(f['number'])) favorites.add(f);
+    });
+
+    print(favorites);
     setCurrentClasses();
   }
 
