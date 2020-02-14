@@ -19,6 +19,7 @@ import '../route_paths.dart';
     materialInputDirectives,
     MaterialDropdownSelectComponent,
     MaterialSelectItemComponent,
+    MaterialButtonComponent,
     NgClass, 
     NgFor
   ],
@@ -26,25 +27,63 @@ import '../route_paths.dart';
 )
 
 class ListComponent{
-  get fav => window.localStorage['fav'] == null? '' : window.localStorage['fav'];
+  get fav => window.localStorage['fav'] == null ? '' : window.localStorage['fav'];
   List poke = list.poke;
+  List response = List();
+  List pokemons_list = List();
+  Map single_pokemon = Map();
   List all_types = List();
-  List type = List();
   List regions = List();
   String typeSelect = 'All';
   String regionSelect = 'All';
-  String url = 'https://pokeapi.co/api/v2/pokemon/';
+  String url = 'https://pokeapi.co/api/v2/pokemon';
 
   getData() async{
-    HttpRequest request2 = await HttpRequest.request('https://pokeapi.co/api/v2/type/', method: 'GET');
-    HttpRequest request3 = await HttpRequest.request('https://pokeapi.co/api/v2/region/', method: 'GET');
-    all_types = json.decode(request2.responseText)['results'];
-    regions = json.decode(request3.responseText)['results'];
-    
+    HttpRequest pokemons_request = await HttpRequest.request('$url', method: 'GET');
+    response = (json.decode(pokemons_request.responseText)['results']);
+    // HttpRequest types_request = await HttpRequest.request('$url/type/', method: 'GET');
+    // all_types = json.decode(types_request.responseText)['results'];
+    // HttpRequest regions_request = await HttpRequest.request('$url/region/', method: 'GET');
+    // regions = json.decode(regions_request.responseText)['results'];
+
+    for(Map<String, dynamic> p in response){
+      HttpRequest single_pokemon_request = await HttpRequest.request(p['url'], method: 'GET');
+      single_pokemon = json.decode(single_pokemon_request.responseText);
+      p.addAll({'image': single_pokemon['sprites']['front_default']});
+      p.addAll({'number': single_pokemon['id'].toString()});
+      p.addAll({"class": {}, "class2": {}});
+      p.addAll({'type1': single_pokemon['types'][0]['type']['name']});
+      if (single_pokemon['types'].length == 2) {
+        p.addAll({'type2': single_pokemon['types'][1]['type']['name']});
+      }
+      pokemons_list.add(p);
+    };
+
+    print(pokemons_list);
+
+    url = json.decode(pokemons_request.responseText)['next'];
+
     setCurrentClasses();
   }
 
+  getSinglePokemon(p) async{
+    HttpRequest single_pokemon_request = await HttpRequest.request(p['url'], method: 'GET');
+    single_pokemon = json.decode(single_pokemon_request.responseText);
+    p.addAll({'image': single_pokemon['sprites']['front_default']});
+    p.addAll({'number': single_pokemon['id']});
+    p.addAll({"class": {}, "class2": {}});
+    p.addAll({'type1': single_pokemon['types'][0]['type']['name']});
+    if (single_pokemon['types'].length == 2) {
+      p.addAll({'type2': single_pokemon['types'][1]['type']['name']});
+    }
+    return p;
+  }
+
   ListComponent(){
+    getData();
+  }
+
+  scroll(){
     getData();
   }
 
@@ -73,7 +112,7 @@ class ListComponent{
   String PokeUrl() => RoutePaths.pokemon.toUrl();
 
   void setCurrentClasses() {
-    for(Map p in poke){
+    for(Map p in pokemons_list){
       p['class'] = <String, bool>{
         'normal': p['type1'] == 'normal',
         'fire': p['type1'] == 'fire',

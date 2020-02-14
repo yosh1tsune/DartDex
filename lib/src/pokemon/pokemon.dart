@@ -40,7 +40,7 @@ class PokemonComponent{
   }
 
   getDetails() async{
-    HttpRequest request =  await HttpRequest.request('https://pokeapi.co/api/v2/pokemon/$id', method: 'GET');
+    HttpRequest request = await HttpRequest.request('https://pokeapi.co/api/v2/pokemon/$id', method: 'GET');
     details = json.decode(request.responseText);
     abilities = json.decode(request.responseText)['abilities'];
     sprites = json.decode(request.responseText)['sprites'];

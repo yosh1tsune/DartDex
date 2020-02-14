@@ -18,7 +18,7 @@
         </div>
         <div style="width: 100px;">
             <label class="button-label">Region</label>
-            <material-dropdown-select class="button-pos" [buttonText]="regionSelect" [options]="regions">
+            <material-dropdown-select class="button-pos" [buttonText]="regionSelect">
                 <material-select-item (click)="regionSelect = 'All'">
                     All
                 </material-select-item>
@@ -32,8 +32,8 @@
     </div>
 
     <div class="row" style="padding: 5em; justify-content: space-between;">
-        <div class="col-lg-2 col-md-4 col-sm-6 block" [routerLink]="PokeUrl()" (click)="getDetails(p['number'])" *ngFor="let p of poke">
-            <img [ngClass]="fav.contains(p['number'])? 'fav' :'not_fav'" (click)="addFav(p['number']); $event.stopPropagation()">
+        <div class="col-lg-2 col-md-4 col-sm-6 block" [routerLink]="PokeUrl()" (click)="getDetails(p['number'])" *ngFor="let p of pokemons_list">
+            <!-- <img [ngClass]="fav.contains(p['number'])? 'fav' :'not_fav'" (click)="addFav(p['number']); $event.stopPropagation()"> -->
             <img [src]="p['image']" style="width: 100%; margin: auto; display: block">
             <p style="text-align: center; text-transform: capitalize; color: black;">#{{p['number']}} {{p['name']}}</p>
             <div class="row justify-content-center">
@@ -46,4 +46,5 @@
             </div>
         </div>
     </div>
+    <material-button (click)='getData()' >Add Poke</material-button>
 </div>
